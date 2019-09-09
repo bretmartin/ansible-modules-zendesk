@@ -15,7 +15,17 @@ def main():
 
     client = zendesk_api_client(module)
 
-    result['macros'] = client.macros_list()['macros']
+    macros = []
+
+    for macro in client.macros_list()['macros']:
+        action_dicts = []
+        for action in macro['actions']:
+            action_dict = {action['field']: action['value']}
+            action_dicts.append(action_dict)
+        macro['actions'] = action_dicts
+        macros.append(macro)
+
+    result['macros'] = macros
 
     module.exit_json(**result)
 

@@ -20,9 +20,17 @@ def main():
     result['groups'] = {}
     for trigger in result['triggers']:
         for action in trigger['actions']:
+
             if action['field'] == 'group_id':
                 group = client.group_show(id=action['value'])
                 result['groups'][action['value']] = group['group']['name']
+
+        for condition_type in ['all', 'any']:
+            condition_strings = []
+            for condition in trigger['conditions'][condition_type]:
+                condition_string = '%s %s %s' % (condition['field'], condition['operator'], condition['value'])
+                condition_strings.append(condition_string)
+            trigger['conditions'][condition_type] = condition_strings
 
     module.exit_json(**result)
 
